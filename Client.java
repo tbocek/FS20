@@ -8,7 +8,7 @@ class TCPClient {
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         outToServer.writeBytes("5Anybody there?\n");
         String modifiedSentence = inFromServer.readLine();
-        System.out.println("FROM SERVER: " + modifiedSentence);
+        System.out.println("Client received from server: " + modifiedSentence);
         clientSocket.close();
     }
 }
