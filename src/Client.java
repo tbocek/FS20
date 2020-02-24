@@ -1,7 +1,7 @@
 import java.io.*;
 import java.net.*;
 
-class TCPClient {
+class Client {
     public static void main(String argv[]) throws Exception {
         Socket clientSocket = new Socket("localhost", 8081);
         DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
