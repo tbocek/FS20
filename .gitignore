@@ -45,3 +45,6 @@ hs_err_pid*
 .gradle/**
 server
 client
+/server-ra
+/server-stateful
+/victim
