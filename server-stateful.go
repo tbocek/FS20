@@ -7,15 +7,12 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
-	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 )
 
 var (
-	sId  int32
 	m    = make(map[string]string)
 	opts struct {
 		Port int `short:"p" long:"port" description:"Port to listen on" required:"true"`
@@ -46,12 +43,14 @@ func post(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 }
 
 func main() {
-	rand.Seed(time.Now().UnixNano())
-	sId = rand.Int31()
+	_, err := flags.NewParser(&opts, flags.None).Parse()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	router := httprouter.New()
 	router.GET("/", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-		w.Write([]byte(fmt.Sprintf("<html><body><h1>%v</h1></body></html>", sId)))
+		w.Write([]byte(fmt.Sprintf("<html><body><h1>%v</h1></body></html>", opts.Port)))
 	})
 
 	router.GET("/health", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -61,10 +60,6 @@ func main() {
 	router.GET("/portfolio/:uuid", get)
 	router.POST("/portfolio/:uuid", post)
 
-	_, err := flags.NewParser(&opts, flags.None).Parse()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("Starting server (%v) on port %v...", sId, opts.Port)
+	log.Printf("Starting server on port %v...", opts.Port)
 	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(opts.Port), router))
 }
