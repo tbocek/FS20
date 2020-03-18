@@ -10,7 +10,7 @@ class Server
         {
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             serverSocket.receive(receivePacket);
-            String s = new String( receivePacket.getData());
+            String s = new String( receivePacket.getData(), 0, receivePacket.getLength());
             System.out.println("Message Received: " + s);
         }
     }
