@@ -9,7 +9,7 @@ import (
 func main() {
 	fmt.Println("Launching server...")
 	//change the IP 192.168.1.133 to your IP
-	conn, err := net.ListenUDP("udp", &net.UDPAddr{IP: net.ParseIP("192.168.1.133"), Port: 8081})
+	conn, err := net.ListenUDP("udp", &net.UDPAddr{IP: net.ParseIP("152.96.214.243"), Port: 8081})
 	if err != nil {
 		panic(err)
 	}

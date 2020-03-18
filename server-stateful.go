@@ -1,3 +1,4 @@
+//go build server-stateful.go
 package main
 
 import (
@@ -54,7 +55,9 @@ func main() {
 	})
 
 	router.GET("/health", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("[]"))
 	})
 
 	router.GET("/portfolio/:uuid", get)

@@ -10,7 +10,7 @@ import (
 func main() {
 	fmt.Println("Launching server...")
 	//change the IP 192.168.1.133 to your IP
-	conn, _ := net.ListenUDP("udp", &net.UDPAddr{IP: net.ParseIP("192.168.1.133"), Port: 8082})
+	conn, _ := net.ListenUDP("udp", &net.UDPAddr{IP: net.ParseIP("152.96.214.243"), Port: 8082})
 	for {
 		message, _ := bufio.NewReader(conn).ReadString('\n') //read line
 		fmt.Printf("Message Received (len=%v): %v", len(message), string(message))
