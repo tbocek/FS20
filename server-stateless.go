@@ -3,7 +3,9 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/jessevdk/go-flags"
 	"github.com/julienschmidt/httprouter"
 	"google.golang.org/grpc"
@@ -13,6 +15,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var (
@@ -20,7 +23,8 @@ var (
 		Port        int `short:"p" long:"port" description:"Port to listen on" required:"true"`
 		StoragePort int `short:"s" long:"storage-port" description:"Storage port to connect to" required:"true"`
 	}
-	s StorageClient
+	s      StorageClient
+	jwtKey = []byte("my_secret_key")
 )
 
 func getKey(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -60,6 +64,71 @@ func postKey(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	w.WriteHeader(http.StatusOK)
 }
 
+type Credentials struct {
+	Password string `json:"password"`
+	Username string `json:"username"`
+}
+
+type Claims struct {
+	Username string `json:"username"`
+	jwt.StandardClaims
+}
+
+func login(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	var creds Credentials
+	err := json.NewDecoder(r.Body).Decode(&creds)
+	if err != nil {
+		fmt.Printf("err %v", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if creds.Username != "user" || creds.Password != "password" {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	expirationTime := time.Now().Add(5 * time.Minute)
+	claims := &Claims{
+		Username: creds.Username,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(jwtKey)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("token", tokenString)
+	w.WriteHeader(http.StatusOK)
+}
+
+func auth(next httprouter.Handle) httprouter.Handle {
+	return func(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+		authorizationHeader := req.Header.Get("Authorization")
+		if authorizationHeader != "" {
+			bearerToken := strings.Split(authorizationHeader, " ")
+			if len(bearerToken) == 2 {
+				token, err := jwt.Parse(bearerToken[1], func(token *jwt.Token) (i interface{}, err error) {
+					return jwtKey, nil
+				})
+				if err != nil || !token.Valid {
+					w.WriteHeader(http.StatusBadRequest)
+					return
+				}
+				next(w, req, ps)
+				return
+			}
+		}
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+}
+
 func main() {
 	_, err := flags.NewParser(&optsService, flags.None).Parse()
 	if err != nil {
@@ -83,8 +152,11 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	router.GET("/portfolio/:uuid", getKey)
-	router.POST("/portfolio/:uuid", postKey)
+	router.POST("/login", login)
+	router.GET("/refresh", nil)
+
+	router.GET("/portfolio/:uuid", auth(httprouter.Handle(getKey)))
+	router.POST("/portfolio/:uuid", auth(httprouter.Handle(postKey)))
 
 	log.Printf("Starting server on port %v...", optsService.Port)
 	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(optsService.Port), router))
