@@ -24,7 +24,7 @@ var (
 		StoragePort int `short:"s" long:"storage-port" description:"Storage port to connect to" required:"true"`
 	}
 	s      StorageClient
-	jwtKey = []byte("my_secret_key")
+	jwtKey = []byte("password123456")
 )
 
 func getKey(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
