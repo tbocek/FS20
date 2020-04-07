@@ -1,0 +1,24 @@
+[http.routers.dashboard]
+rule = "PathPrefix(`/api`) || PathPrefix(`/dashboard`)"
+entrypoints = ["web"]
+service = "api@internal"
+middlewares = ["auth"]
+
+[http.middlewares.auth.basicAuth]
+users = ["test:$apr1$H6uskkkW$IgXLP6ewTrSuBkTrqE8wj/"]
+
+[http.routers.coinservice]
+rule = "PathPrefix(`/`)"
+entrypoints = ["web"]
+service = "coinservice"
+
+#[http.services.coinservice.loadBalancer.sticky.cookie]
+[http.services.coinservice.loadBalancer.healthCheck]
+path = "/health"
+interval = "3s"
+timeout = "1s"
+
+[[http.services.coinservice.loadBalancer.servers]]
+url = "http://172.17.0.1:8080"
+[[http.services.coinservice.loadBalancer.servers]]
+url = "http://172.17.0.1:8081"
