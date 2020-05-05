@@ -1,14 +1,31 @@
 #docker-compose.yml
+#run with: docker-compose up --build
 version: '3'
 services:
-  service:
-    build: .
+  apiproxy:
+    build: ./apiproxy
     ports:
-      - "8080:8081"
+      - "8081:8080"
+  storage:
+    build: ./storage
+    ports:
+      - "8082:8080"
+  frontend:
+    build: ./frontend
+    ports:
+      - "8083:8080"
+  service1:
+    build: ./service
+    ports:
+      - "8084:8080"
+  service2:
+    build: ./service
+    ports:
+      - "8085:8080"
   traefik:
     image: "traefik"
     ports:
-      - "8888:80"
+      - "8080:80"
     volumes:
       - $PWD/traefik.toml:/etc/traefik/traefik.toml
       - $PWD/dynamic_load.toml:/etc/traefik/dynamic_load.toml
