@@ -7,11 +7,9 @@ COPY *.js *.json ./
 COPY vue ./vue
 RUN yarn install
 RUN ./node_modules/.bin/webpack
-RUN ls  -la
 
 #Dockerfile
 FROM caddy:latest
 COPY Caddyfile /etc/caddy/Caddyfile
 COPY index.html /site/
 COPY --from=builder /app/dist /site/dist/
-RUN ls -la /site
