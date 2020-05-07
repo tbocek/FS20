@@ -217,8 +217,6 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type StorageClient interface {
 	GetKey(ctx context.Context, in *Key, opts ...grpc.CallOption) (*Value, error)
-	//gRPC service methods have exactly one input
-	//message and exactly one output message.
 	PutKeyValue(ctx context.Context, in *KeyValue, opts ...grpc.CallOption) (*Empty, error)
 }
 
@@ -251,8 +249,6 @@ func (c *storageClient) PutKeyValue(ctx context.Context, in *KeyValue, opts ...g
 // StorageServer is the server API for Storage service.
 type StorageServer interface {
 	GetKey(context.Context, *Key) (*Value, error)
-	//gRPC service methods have exactly one input
-	//message and exactly one output message.
 	PutKeyValue(context.Context, *KeyValue) (*Empty, error)
 }
 

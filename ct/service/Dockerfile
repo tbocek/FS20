@@ -10,6 +10,5 @@ RUN go build server-stateless.go storage.pb.go
 
 FROM alpine:latest
 WORKDIR /root/
-RUN apk --no-cache add wait4ports
 COPY --from=builder /build/server-stateless .
 CMD ["./server-stateless", "-p", "8080", "-s", "8082"]

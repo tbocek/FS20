@@ -1,4 +1,6 @@
 #Dockerfile
+#to build image: docker build -t storage .
+#to run: docker run -it --rm -p 8082:8080 storage
 FROM golang:alpine AS builder
 WORKDIR /build
 COPY storage.pb.go server-storage.go ./

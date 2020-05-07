@@ -1,6 +1,6 @@
 #Dockerfile
 #to build image: docker build -t frontend .
-#to run: docker run -it --rm -p 8080:8080 frontend
+#to run: docker run -it --rm -p 8083:8080 frontend
 FROM node:alpine AS builder
 WORKDIR /app
 COPY *.js *.json ./

@@ -4,8 +4,6 @@ package main;
 
 service Storage {
     rpc GetKey(Key) returns (Value) {}
-    //gRPC service methods have exactly one input
-    //message and exactly one output message.
     rpc PutKeyValue(KeyValue) returns (Empty) {}
 }
 
