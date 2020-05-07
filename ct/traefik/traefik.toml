@@ -12,3 +12,10 @@ filePath = "traefik.log"
 level = "INFO"
 
 [accessLog]
+
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "127.0.0.1"
+watch = true
+exposedbydefault = false
+network = "proxy"

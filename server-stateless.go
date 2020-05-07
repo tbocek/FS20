@@ -1,4 +1,4 @@
-//go build server-stateless.go storage.pb.go
+//go build auth.go storage.pb.go
 package main
 
 import (

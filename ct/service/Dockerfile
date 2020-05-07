@@ -1,4 +1,6 @@
 #Dockerfile
+#to build image: docker build -t service .
+#to run: docker run -it --rm -p 8085:8080 service
 FROM golang:alpine AS builder
 WORKDIR /build
 COPY storage.pb.go server-stateless.go ./
@@ -10,4 +12,4 @@ FROM alpine:latest
 WORKDIR /root/
 RUN apk --no-cache add wait4ports
 COPY --from=builder /build/server-stateless .
-CMD ["wait4ports", "tcp://127.0.0.1:8082", "--", "./server-stateless", "-p", "8080", "-s", "8082"]
+CMD ["./server-stateless", "-p", "8080", "-s", "8082"]
