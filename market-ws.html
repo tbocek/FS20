@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>Market</title>
+</head>
+<body>
+
+<h2 >Coinmarketcap without releading page</h2>
+<p id="text">n/a</p>
+
+<script type="text/javascript">
+    const connection = new WebSocket('ws://localhost:8080/ws');
+    connection.onopen = function () {
+        connection.send('start');
+    };
+    let counter = 0;
+    connection.onmessage = function (e) {
+        console.log('update websocket: ' + counter++);
+        let string = 'Markets:<br>';
+        for(let s of JSON.parse(e.data).data) {
+            string += s.name + ', price=' + s.quote.USD.price + '<br>';
+        }
+        string += new Date();
+        let element = document.getElementById('text');
+        element.innerHTML = string;
+    };
+</script>
+</body>
+</html>
